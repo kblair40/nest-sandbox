@@ -29,6 +29,8 @@ export class EmailService {
       to: 'Kevin Gmail, kblair40@gmail.com',
       subject: 'TESTING',
       text: 'Body text',
+      // cc, bcc, html, attachments and many other fields can be added as needed
+      // https://nodemailer.com/message/
     });
 
     console.log('Message sent:', email.messageId);
