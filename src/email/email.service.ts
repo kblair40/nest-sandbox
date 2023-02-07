@@ -16,21 +16,19 @@ export class EmailService {
       host: 'smtp.service.emory.edu',
       port: 587, // Not sure, just following nodemailer.com/about intro
       secure: false, // true for 465, false for other ports
-      // port: 465, // Not sure, just following nodemailer.com/about intro
-      // secure: true, // true for 465, false for other ports
       auth: {
         user: EMORY_NETID,
         pass: EMORY_PASSWORD,
       },
     });
 
+    // cc, bcc, html, attachments and many other fields can be added as needed
+    // https://nodemailer.com/message/
     const email = await transporter.sendMail({
       from: '"Kevin Blair" <kevin.blair@emory.edu>',
       to: 'Kevin Gmail, kblair40@gmail.com',
       subject: 'TESTING',
       text: 'Body text',
-      // cc, bcc, html, attachments and many other fields can be added as needed
-      // https://nodemailer.com/message/
     });
 
     console.log('Message sent:', email.messageId);
