@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { parse } from 'csv-parse';
+import * as nodemailer from 'nodemailer';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
 import { Record } from './entities/record.entity';
 
 const dummyRecord: CreateRecordDto = {
@@ -28,31 +31,49 @@ export class RecordsService {
     private recordsRepository: Repository<Record>,
   ) {}
 
-  create(createRecordDto?: CreateRecordDto) {
+  create() {
     const newRecord = this.recordsRepository.create(dummyRecord);
 
-    // const savedRecord = await this.recordsRepository.save(newRecord);
     return this.recordsRepository.save(newRecord);
-
-    return 'This action adds a new record';
   }
 
-  findAll() {
-    console.log('\n\n\nFIND ALL CALLED\n\n\n');
-    const allRecords = this.recordsRepository.find();
+  async uploadData() {
+    try {
+      const records = await this.getRecordsFromCSV();
+      console.log('\n\nRECORDS:', records.slice(3, 8));
+      console.log('FIND ALL CALLED\n');
+      return this.recordsRepository.find();
+    } catch (e) {
+      console.log('FAILED');
+    }
+  }
+
+  async findAll() {
     return this.recordsRepository.find();
-    return `This action returns all records`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} record`;
-  }
+  getRecordsFromCSV(): Promise<any[]> {
+    const records = [];
 
-  update(id: number, updateRecordDto: UpdateRecordDto) {
-    return `This action updates a #${id} record`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} record`;
+    return new Promise((resolve, reject) => {
+      // https://www.digitalocean.com/community/tutorials/how-to-read-and-write-csv-files-in-node-js-using-node-csv
+      createReadStream(join(process.cwd(), 'assets/budget.unl'))
+        .pipe(
+          parse({
+            delimiter: '|',
+            quote: false, // any falsy value disables quote detection (https://csv.js.org/parse/options/quote/)
+          }),
+        )
+        .on('data', function (row) {
+          records.push(row);
+        })
+        .on('error', function (error) {
+          // console.log('\nERROR DATA:', error);
+          return reject(error);
+        })
+        .on('end', function () {
+          return resolve(records);
+        });
+    });
   }
 }

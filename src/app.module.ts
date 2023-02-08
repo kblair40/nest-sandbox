@@ -12,7 +12,7 @@ import { RecordsModule } from './records/records.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      // name: 'postgresConnection', TODO: Figure out why app breaks if name is included
+      // name: 'postgresConnection', // TODO: Figure out why app breaks if name is included
       host: process.env.POSTGRES_URL,
       port: 5432,
       username: process.env.POSTGRES_USER,
