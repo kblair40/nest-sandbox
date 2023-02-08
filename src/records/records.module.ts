@@ -9,5 +9,6 @@ import { Record } from './entities/record.entity';
   imports: [TypeOrmModule.forFeature([Record])],
   controllers: [RecordsController],
   providers: [RecordsService],
+  exports: [RecordsService],
 })
 export class RecordsModule {}
