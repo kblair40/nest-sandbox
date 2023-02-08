@@ -11,7 +11,7 @@ console.log('NETID:', EMORY_NETID);
 @Injectable()
 export class EmailService {
   async sendEmail() {
-    console.log('\n\nSENDING EMAIL\n\n');
+    console.log('\n\nSENDING EMAIL');
     const transporter = nodemailer.createTransport({
       host: 'smtp.service.emory.edu',
       port: 587, // Not sure, just following nodemailer.com/about intro
