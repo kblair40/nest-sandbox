@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { parse } from 'csv-parse';
 import * as nodemailer from 'nodemailer';
 import { createReadStream } from 'fs';
@@ -24,19 +24,22 @@ const DUMMY_RECORD: CreateRecordDto = {
   twelve: 'hgdfdfjh',
 };
 
+const EMORY_PASSWORD = process.env.EMORY_PASSWORD;
+const EMORY_NETID = process.env.EMORY_NETID;
+
 /**
  * STEPS...
  * 1. Get CSV File
  *   - From a different server, not saved locally as it is done here
- * 2. Parse/Validate Rows
+ * 2. Parse/Validate Rows (getRecordsFromCSV() method)
  *   - Unclear what validation should be performed...
  *     - ex. if row is missing value in column '7', should we not save that row?
  *         Or should we save that row with a null value for that column?
  *         Or should we force that column to have a specific value/type and then save it?
  *     - Should any logging be done for rows with incomplete data?
- * 3. Upload valid rows/records to database
+ * 3. Upload valid rows/records to database (uploadData() method)
  *   - Table is named 'record' at the moment but should improve that once the data we're saving is known.
- * 4. Send success (or error) email to someone/somewhere
+ * 4. Send success (or error) email to someone/somewhere (sendEmail() method)
  *   - What data should be in email?
  *     - ex. just an "upload successful" kind of message? Maybe include # of rows inserted?
  */
@@ -54,7 +57,7 @@ export class RecordsService {
     return this.recordsRepository.save(newRecord);
   }
 
-  makeRecord(record: CreateRecordDto) {
+  saveRecord(record: CreateRecordDto) {
     const newRecord = this.recordsRepository.create(record);
     return this.recordsRepository.save(newRecord);
   }
@@ -80,8 +83,10 @@ export class RecordsService {
           twelve: record[11],
         };
 
-        this.makeRecord(recordObject);
+        this.saveRecord(recordObject);
       }
+
+      this.sendEmail();
 
       return this.recordsRepository.find();
     } catch (e) {
@@ -96,7 +101,8 @@ export class RecordsService {
 
   deleteAll() {
     console.log('DELETE');
-    this.recordsRepository.delete({ one: 'fdsawf' });
+    // Deletes everything
+    this.recordsRepository.delete({ one: Not('') });
   }
 
   getRecordsFromCSV(): Promise<any[]> {
@@ -122,5 +128,29 @@ export class RecordsService {
           return resolve(records);
         });
     });
+  }
+
+  async sendEmail() {
+    console.log('\n\nSENDING EMAIL');
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.service.emory.edu',
+      port: 587, // Not sure, just following nodemailer.com/about intro
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: EMORY_NETID,
+        pass: EMORY_PASSWORD,
+      },
+    });
+
+    // cc, bcc, html, attachments and many other fields can be added as needed
+    // https://nodemailer.com/message/
+    const email = await transporter.sendMail({
+      from: '"Kevin Blair" <kevin.blair@emory.edu>',
+      to: 'Kevin Gmail, kblair40@gmail.com',
+      subject: 'TESTING',
+      text: 'Body text',
+    });
+
+    console.log('Message sent:', email.messageId);
   }
 }
