@@ -43,47 +43,27 @@ export class EmailService {
   }
 
   parseCSV() {
-    // const file = createReadStream(join(process.cwd(), 'assets/budget.csv'));
-    // const file = readFile(join(process.cwd(), 'assets/budget.csv'), (data) =>
-    //   console.log('\nDATA IN CB:', data),
-    // );
-    // const streamableFile = new StreamableFile(file);
-    // console.log('\nSTREAMABLEFILE:', streamableFile);
-    // console.log('\nSTREAM:', streamableFile.getStream());
+    const records = [];
 
     createReadStream(join(process.cwd(), 'assets/budget.csv'))
-      .pipe(parse({ delimiter: '|', relax_quotes: true }))
+      .pipe(
+        parse({
+          delimiter: '|',
+          relax_quotes: true,
+          quote: false, // any falsy value disables quote detection (https://csv.js.org/parse/options/quote/)
+          relax_column_count: true,
+        }),
+      )
       .on('data', function (row) {
-        console.log('\n\nROW:', row);
+        records.push(row);
+      })
+      .on('error', function (error) {
+        console.log('\nERROR DATA:', error);
+      })
+      .on('end', function () {
+        console.log('\nALL RECORDS:', records.slice(0, 2));
       });
-    // const file = createReadStream(join(process.cwd(), 'assets/budget.csv'))
-    //   .pipe(parse({ delimiter: '|' }))
-    //   .on('data', function (row) {
-    //     console.log('\n\nROW:', row);
-    //   });
 
-    const records = [];
-    // const parser = parse({
-    //   delimiter: '|',
-    // });
-
-    // parser.on('readable', function () {
-    //   let record;
-    //   while ((record = parser.read()) !== null) {
-    //     console.log('record:', record);
-    //     records.push(record);
-    //   }
-    // });
-
-    // parser.on('end', function () {
-    //   console.log('\n\nENDED!!\n\n');
-    // });
-
-    // parser.write(file);
-
-    // return streamableFile;
-    // console.log('\n\nFILE:', file);
-
-    return 'Hello';
+    return '';
   }
 }

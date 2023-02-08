@@ -11,7 +11,7 @@ export class EmailController {
 
   @Get()
   parseCSV() {
-    this.emailService.parseCSV();
+    return this.emailService.parseCSV();
   }
 
   @Post()
