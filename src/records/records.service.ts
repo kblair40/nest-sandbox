@@ -9,7 +9,7 @@ import { join } from 'path';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { Record } from './entities/record.entity';
 
-const dummyRecord: CreateRecordDto = {
+const DUMMY_RECORD: CreateRecordDto = {
   one: 'fdsawf',
   two: 'agqw',
   three: 'hdgfsg',
@@ -24,6 +24,23 @@ const dummyRecord: CreateRecordDto = {
   twelve: 'hgdfdfjh',
 };
 
+/**
+ * STEPS...
+ * 1. Get CSV File
+ *   - From a different server, not saved locally as it is done here
+ * 2. Parse/Validate Rows
+ *   - Unclear what validation should be performed...
+ *     - ex. if row is missing value in column '7', should we not save that row?
+ *         Or should we save that row with a null value for that column?
+ *         Or should we force that column to have a specific value/type and then save it?
+ *     - Should any logging be done for rows with incomplete data?
+ * 3. Upload valid rows/records to database
+ *   - Table is named 'record' at the moment but should improve that once the data we're saving is known.
+ * 4. Send success (or error) email to someone/somewhere
+ *   - What data should be in email?
+ *     - ex. just an "upload successful" kind of message? Maybe include # of rows inserted?
+ */
+
 @Injectable()
 export class RecordsService {
   constructor(
@@ -32,7 +49,7 @@ export class RecordsService {
   ) {}
 
   create() {
-    const newRecord = this.recordsRepository.create(dummyRecord);
+    const newRecord = this.recordsRepository.create(DUMMY_RECORD);
 
     return this.recordsRepository.save(newRecord);
   }
@@ -73,7 +90,7 @@ export class RecordsService {
   }
 
   findAll() {
-    console.log('FIND ALL CALLED\n');
+    console.log('FIND ALL');
     return this.recordsRepository.find();
   }
 
