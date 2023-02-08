@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { OracleConnectionOptions } from 'typeorm/driver/oracle/OracleConnectionOptions';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 import { Email } from './src/email/entities/email.entity';
 
@@ -15,9 +16,20 @@ const oracleConfig: OracleConnectionOptions = {
   // entities: ['dist/**/*.entity{.ts,.js}'],
   entities: [Email],
   synchronize: false,
-  // migrations: ['dist/src/db/migrations/*.oracle.js'],
-  // cli: { migrationsDir: 'src/db/migrations' },
   logging: ['query', 'error'],
 };
 
-export { oracleConfig };
+const postgresConfig: PostgresConnectionOptions = {
+  type: 'postgres',
+  name: 'postgresConnection',
+  host: process.env.POSTGRES_URL,
+  port: 5432,
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PSWD,
+  database: process.env.POSTGRES_DB,
+  entities: [],
+  synchronize: true,
+  logging: ['query', 'error'],
+};
+
+export { oracleConfig, postgresConfig };

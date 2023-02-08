@@ -3,14 +3,12 @@ import { parse } from 'csv-parse';
 import * as nodemailer from 'nodemailer';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-// for some reason, nodemailer is undefined if imported like... import nodemailer from 'nodemailer';
-// https://stackoverflow.com/questions/27084159/cannot-read-property-createtransport-of-undefined
 
 const EMORY_PASSWORD = process.env.EMORY_PASSWORD;
 const EMORY_NETID = process.env.EMORY_NETID;
 
 @Injectable()
-export class EmailService {
+export class RecordService {
   async sendEmail() {
     console.log('\n\nSENDING EMAIL');
     const transporter = nodemailer.createTransport({
