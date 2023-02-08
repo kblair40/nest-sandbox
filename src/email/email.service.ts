@@ -37,21 +37,16 @@ export class EmailService {
     });
 
     console.log('Message sent:', email.messageId);
-
-    // Preview only available when sending through an Ethereal account
-    console.log('Preview URL:', nodemailer.getTestMessageUrl(email));
   }
 
   parseCSV() {
     const records = [];
 
-    createReadStream(join(process.cwd(), 'assets/budget.csv'))
+    createReadStream(join(process.cwd(), 'assets/budget.unl'))
       .pipe(
         parse({
           delimiter: '|',
-          relax_quotes: true,
           quote: false, // any falsy value disables quote detection (https://csv.js.org/parse/options/quote/)
-          relax_column_count: true,
         }),
       )
       .on('data', function (row) {
