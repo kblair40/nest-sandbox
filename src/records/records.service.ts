@@ -37,19 +37,49 @@ export class RecordsService {
     return this.recordsRepository.save(newRecord);
   }
 
+  makeRecord(record: CreateRecordDto) {
+    const newRecord = this.recordsRepository.create(record);
+    return this.recordsRepository.save(newRecord);
+  }
+
   async uploadData() {
     try {
       const records = await this.getRecordsFromCSV();
-      console.log('\n\nRECORDS:', records.slice(3, 8));
-      console.log('FIND ALL CALLED\n');
+      // console.log('\n\nRECORDS:', records.slice(3, 8));
+
+      for (const record of records) {
+        const recordObject: CreateRecordDto = {
+          one: record[0],
+          two: record[1],
+          three: record[2],
+          four: record[3],
+          five: record[4],
+          six: record[5],
+          seven: record[6],
+          eight: record[7],
+          nine: record[8],
+          ten: record[9],
+          eleven: record[10],
+          twelve: record[11],
+        };
+
+        this.makeRecord(recordObject);
+      }
+
       return this.recordsRepository.find();
     } catch (e) {
       console.log('FAILED');
     }
   }
 
-  async findAll() {
+  findAll() {
+    console.log('FIND ALL CALLED\n');
     return this.recordsRepository.find();
+  }
+
+  deleteAll() {
+    console.log('DELETE');
+    this.recordsRepository.delete({ one: 'fdsawf' });
   }
 
   getRecordsFromCSV(): Promise<any[]> {
