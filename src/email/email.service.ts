@@ -1,17 +1,13 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { parse } from 'csv-parse';
 import * as nodemailer from 'nodemailer';
-import { createReadStream, readFile } from 'fs';
+import { createReadStream } from 'fs';
 import { join } from 'path';
 // for some reason, nodemailer is undefined if imported like... import nodemailer from 'nodemailer';
 // https://stackoverflow.com/questions/27084159/cannot-read-property-createtransport-of-undefined
 
-// import file from '../assets/budget.csv';
-
 const EMORY_PASSWORD = process.env.EMORY_PASSWORD;
 const EMORY_NETID = process.env.EMORY_NETID;
-console.log('PASSWORD:', EMORY_PASSWORD);
-console.log('NETID:', EMORY_NETID);
 
 @Injectable()
 export class EmailService {
@@ -42,6 +38,7 @@ export class EmailService {
   parseCSV() {
     const records = [];
 
+    // https://www.digitalocean.com/community/tutorials/how-to-read-and-write-csv-files-in-node-js-using-node-csv
     createReadStream(join(process.cwd(), 'assets/budget.unl'))
       .pipe(
         parse({
