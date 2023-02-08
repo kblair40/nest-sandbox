@@ -26,7 +26,6 @@ export class RecordsController {
 
   @Get('/')
   findAll() {
-    return 'HELLO';
     return this.recordsService.findAll();
   }
 
