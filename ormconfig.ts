@@ -2,7 +2,8 @@ import 'dotenv/config';
 import { OracleConnectionOptions } from 'typeorm/driver/oracle/OracleConnectionOptions';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-import { Email } from './src/email/entities/email.entity';
+// import { Email } from './src/email/entities/email.entity';
+// import { Record } from './src/record/entities/record.entity';
 
 const username = process.env.ORACLEDB_USER;
 console.log('\nUSERNAME:', username, '\n');
@@ -14,7 +15,8 @@ const oracleConfig: OracleConnectionOptions = {
   password: process.env.ORACLEDB_PSWD,
   connectString: process.env.ORACLEDB_URL,
   // entities: ['dist/**/*.entity{.ts,.js}'],
-  entities: [Email],
+  // entities: [Email, Record],
+  entities: ['dist/**/*.entity.js'],
   synchronize: false,
   logging: ['query', 'error'],
 };
@@ -27,7 +29,8 @@ const postgresConfig: PostgresConnectionOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PSWD,
   database: process.env.POSTGRES_DB,
-  entities: [],
+  // entities: [Record],
+  entities: ['dist/**/*.entity.js'],
   synchronize: true,
   logging: ['query', 'error'],
 };
