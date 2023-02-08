@@ -12,19 +12,24 @@ export class RecordsController {
   @Get()
   findAll() {
     return this.recordsService.findAll();
-    // return this.recordsService.uploadData();
+  }
+
+  @Get('/upload')
+  uploadData() {
+    return this.recordsService.uploadData();
+  }
+
+  @Get('/delete')
+  deleteAll() {
+    return this.recordsService.deleteAll();
   }
 
   @Post()
   create() {
     return this.recordsService.create();
   }
+
   // create(@Body() createRecordDto: CreateRecordDto) {
   //   return this.recordsService.create(createRecordDto);
-  // }
-
-  // @Get('/delete')
-  // deleteAll() {
-  //   return this.recordsService.deleteAll();
   // }
 }
