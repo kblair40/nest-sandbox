@@ -57,6 +57,10 @@ export class RecordsService {
     return this.recordsRepository.save(newRecord);
   }
 
+  findAll() {
+    return this.recordsRepository.find();
+  }
+
   async uploadData() {
     try {
       const newRecords = [];
@@ -88,7 +92,7 @@ export class RecordsService {
       const saveResult = await this.recordsRepository.save(newRecords);
       console.log('\n\nSAVE RESULT COUNT:', saveResult.length, '\n\n');
 
-      this.sendEmail();
+      this.sendEmail(`Inserted ${saveResult.length} records`);
 
       return this.recordsRepository.find();
     } catch (e) {
@@ -96,16 +100,15 @@ export class RecordsService {
     }
   }
 
-  findAll() {
-    console.log('FIND ALL');
-    return this.recordsRepository.find();
-  }
-
   async deleteAll() {
     // Deletes everything
     const deleteResult = await this.recordsRepository.delete({ one: Not('') });
-    console.log('\n\nDELETE RESULT:', deleteResult, deleteResult.affected);
-    const numOfRowsDeleted = deleteResult.affected;
+    console.log('\n# of deleted rows:', deleteResult.affected);
+
+    // don't send if no rows were deleted
+    if (deleteResult.affected) {
+      this.sendEmail(`Deleted ${deleteResult.affected} records`);
+    }
   }
 
   getRecordsFromCSV(): Promise<any[]> {
@@ -133,7 +136,7 @@ export class RecordsService {
     });
   }
 
-  async sendEmail() {
+  async sendEmail(bodyString?: string) {
     console.log('\n\nSENDING EMAIL');
     const transporter = nodemailer.createTransport({
       host: 'smtp.service.emory.edu',
@@ -151,7 +154,7 @@ export class RecordsService {
       from: '"Kevin Blair" <kevin.blair@emory.edu>',
       to: 'Kevin Gmail, kblair40@gmail.com',
       subject: 'TESTING',
-      text: 'Body text',
+      text: bodyString ? bodyString : 'body text',
     });
 
     console.log('Message sent:', email.messageId);
