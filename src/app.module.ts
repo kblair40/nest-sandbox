@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -23,6 +24,7 @@ import { RecordsModule } from './records/records.module';
       synchronize: true,
       logging: ['query', 'error'],
     }),
+    ScheduleModule.forRoot(),
     RecordsModule,
     EmailModule,
     // RecordsModule,

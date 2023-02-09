@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not } from 'typeorm';
 import { parse } from 'csv-parse';
@@ -46,6 +47,8 @@ const EMORY_NETID = process.env.EMORY_NETID;
 
 @Injectable()
 export class RecordsService {
+  private readonly logger = new Logger(RecordsService.name);
+
   constructor(
     @InjectRepository(Record)
     private recordsRepository: Repository<Record>,
@@ -59,6 +62,14 @@ export class RecordsService {
 
   findAll() {
     return this.recordsRepository.find();
+  }
+
+  // https://docs.nestjs.com/techniques/task-scheduling#declarative-cron-jobs
+  // http://crontab.org/ - details on * * * * * syntax
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  cronTask() {
+    console.log('\n30 SECONDS HAVE PASSED\n');
+    // this.logger.log('30 SECONDS HAS PASSED');
   }
 
   async uploadData() {
