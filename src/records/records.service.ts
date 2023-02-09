@@ -52,23 +52,19 @@ export class RecordsService {
   ) {}
 
   create() {
+    // Creates a single (non-unique) record.  Only use for testing
     const newRecord = this.recordsRepository.create(DUMMY_RECORD);
-
-    return this.recordsRepository.save(newRecord);
-  }
-
-  saveRecord(record: CreateRecordDto) {
-    const newRecord = this.recordsRepository.create(record);
     return this.recordsRepository.save(newRecord);
   }
 
   async uploadData() {
     try {
-      const records = await this.getRecordsFromCSV();
+      const newRecords = [];
+      const rawRecords = await this.getRecordsFromCSV();
       // console.log('\n\nRECORDS:', records.slice(3, 8));
 
-      for (const record of records) {
-        const recordObject: CreateRecordDto = {
+      for (const record of rawRecords) {
+        const newRecord: CreateRecordDto = {
           one: record[0],
           two: record[1],
           three: record[2],
@@ -83,8 +79,14 @@ export class RecordsService {
           twelve: record[11],
         };
 
-        this.saveRecord(recordObject);
+        // newRecords.push(this.recordsRepository.save(newRecord));
+        newRecords.push(newRecord);
+
+        // this.saveRecord(newRecord);
       }
+
+      const saveResult = await this.recordsRepository.save(newRecords);
+      console.log('\n\nSAVE RESULT COUNT:', saveResult.length, '\n\n');
 
       this.sendEmail();
 
@@ -99,10 +101,11 @@ export class RecordsService {
     return this.recordsRepository.find();
   }
 
-  deleteAll() {
-    console.log('DELETE');
+  async deleteAll() {
     // Deletes everything
-    this.recordsRepository.delete({ one: Not('') });
+    const deleteResult = await this.recordsRepository.delete({ one: Not('') });
+    console.log('\n\nDELETE RESULT:', deleteResult, deleteResult.affected);
+    const numOfRowsDeleted = deleteResult.affected;
   }
 
   getRecordsFromCSV(): Promise<any[]> {
